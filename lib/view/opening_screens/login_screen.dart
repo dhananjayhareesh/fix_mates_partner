@@ -1,12 +1,11 @@
-import 'package:fix_mates_servicer/resources/widgets/button.dart';
-import 'package:fix_mates_servicer/resources/widgets/text_field.dart';
-import 'package:fix_mates_servicer/view/home_screen.dart';
-import 'package:fix_mates_servicer/view/opening_screens/signup_screen.dart';
-import 'package:fix_mates_servicer/view/opening_screens/forgot_password_screen.dart';
-import 'package:fix_mates_servicer/view_model/login_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:get/get.dart';
+import 'package:fix_mates_servicer/view/opening_screens/signup_screen.dart';
+import 'package:fix_mates_servicer/view/opening_screens/forgot_password_screen.dart';
+import 'package:fix_mates_servicer/view_model/login_controller.dart';
+import 'package:fix_mates_servicer/resources/widgets/button.dart';
+import 'package:fix_mates_servicer/resources/widgets/text_field.dart';
 
 class LoginScreen extends StatelessWidget {
   LoginScreen({super.key});
@@ -64,12 +63,14 @@ class LoginScreen extends StatelessWidget {
                   textEditingController: loginController.emailController,
                   hintText: "Enter your email",
                   icon: Icons.email,
+                  errorText: loginController.emailError.value,
                 ),
                 TextFieldInput(
                   isPass: true,
                   textEditingController: loginController.passwordController,
                   hintText: "Enter your password",
                   icon: Icons.lock,
+                  errorText: loginController.passwordError.value,
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 35),

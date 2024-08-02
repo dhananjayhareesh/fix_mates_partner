@@ -1,6 +1,8 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:fix_mates_servicer/firebase_options.dart';
+import 'package:fix_mates_servicer/view/home_screen.dart';
 import 'package:fix_mates_servicer/view/opening_screens/login_screen.dart';
+import 'package:fix_mates_servicer/view/opening_screens/work_detail_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 

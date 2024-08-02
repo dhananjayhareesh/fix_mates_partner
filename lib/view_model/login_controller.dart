@@ -9,7 +9,23 @@ class LoginController extends GetxController {
   var passwordController = TextEditingController();
   var isLoading = false.obs;
 
+  var emailError = RxString('');
+  var passwordError = RxString('');
+
   void loginUsers() async {
+    emailError.value = '';
+    passwordError.value = '';
+
+    if (emailController.text.isEmpty) {
+      emailError.value = 'Email cannot be empty';
+      return;
+    }
+
+    if (passwordController.text.isEmpty) {
+      passwordError.value = 'Password cannot be empty';
+      return;
+    }
+
     isLoading.value = true;
     String res = await AuthServices().loginUser(
       email: emailController.text,
