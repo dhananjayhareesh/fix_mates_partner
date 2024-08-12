@@ -25,7 +25,6 @@ class SignUpController extends GetxController {
     );
 
     if (res == "success") {
-      // Navigate to WorkCategory and register SignUpController
       Get.to(() => WorkCategory(), binding: BindingsBuilder(() {
         Get.put(SignUpController()); // Register SignUpController
       }));
@@ -42,17 +41,16 @@ class SignUpController extends GetxController {
   Future<void> addDocuments(String category, File photo, File idCard) async {
     try {
       String photoUrl =
-          await _uploadFile(photo, '${category.toLowerCase()}Workers/photo');
+          await _uploadFile(photo, 'workers/${category.toLowerCase()}/photo');
       String idCardUrl =
-          await _uploadFile(idCard, '${category.toLowerCase()}Workers/idCard');
+          await _uploadFile(idCard, 'workers/${category.toLowerCase()}/idCard');
 
-      await FirebaseFirestore.instance
-          .collection('${category.toLowerCase()}Workers')
-          .add({
+      await FirebaseFirestore.instance.collection('workers').add({
         'userName': nameController.text,
         'userEmail': emailController.text,
         'photoUrl': photoUrl,
         'idCardUrl': idCardUrl,
+        'category': category,
       });
       Get.offAll(() => HomeScreen());
     } catch (e) {

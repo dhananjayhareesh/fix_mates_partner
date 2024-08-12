@@ -1,3 +1,4 @@
+import 'package:fix_mates_servicer/view/opening_screens/verification_screen.dart';
 import 'package:fix_mates_servicer/view_model/signUp_controller.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -7,6 +8,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fix_mates_servicer/view/home_screen.dart';
 import 'package:fix_mates_servicer/resources/widgets/snackBar.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:uuid/uuid.dart'; // Add this dependency to generate unique IDs
 
 class UploadDocumentsController extends GetxController {
   final String category;
@@ -43,20 +45,25 @@ class UploadDocumentsController extends GetxController {
   Future<void> submitDocuments() async {
     if (photo.value != null && idCard.value != null) {
       try {
-        String photoUrl = await _uploadFile(
-            photo.value!, '${category.toLowerCase()}Workers/photo');
-        String idCardUrl = await _uploadFile(
-            idCard.value!, '${category.toLowerCase()}Workers/idCard');
+        // Generate unique identifiers for the files
+        final uniqueId = Uuid().v4();
 
-        await FirebaseFirestore.instance
-            .collection('${category.toLowerCase()}Workers')
-            .add({
+        String photoUrl = await _uploadFile(
+            photo.value!, 'workers/${category.toLowerCase()}/photo_$uniqueId');
+        String idCardUrl = await _uploadFile(idCard.value!,
+            'workers/${category.toLowerCase()}/idCard_$uniqueId');
+
+        await FirebaseFirestore.instance.collection('workers').add({
           'userName': Get.find<SignUpController>().nameController.text,
           'userEmail': Get.find<SignUpController>().emailController.text,
           'photoUrl': photoUrl,
           'idCardUrl': idCardUrl,
+          'category': category,
+          'status': 'pending', // Initial status is 'pending'
         });
-        Get.offAll(() => HomeScreen());
+
+        Get.offAll(
+            () => VerificationScreen()); // Navigate to Verification Screen
       } catch (e) {
         showSnackBar(Get.context!, 'Failed to upload documents: $e');
       }
