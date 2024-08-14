@@ -5,10 +5,9 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:fix_mates_servicer/view/home_screen.dart';
 import 'package:fix_mates_servicer/resources/widgets/snackBar.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:uuid/uuid.dart'; // Add this dependency to generate unique IDs
+import 'package:uuid/uuid.dart';
 
 class UploadDocumentsController extends GetxController {
   final String category;
@@ -16,6 +15,7 @@ class UploadDocumentsController extends GetxController {
 
   var photo = Rx<File?>(null);
   var idCard = Rx<File?>(null);
+  var description = ''.obs; // Observable for the work experience description
 
   UploadDocumentsController(this.category);
 
@@ -43,9 +43,8 @@ class UploadDocumentsController extends GetxController {
   }
 
   Future<void> submitDocuments() async {
-    if (photo.value != null && idCard.value != null) {
+    if (photo.value != null && idCard.value != null && description.isNotEmpty) {
       try {
-        // Generate unique identifiers for the files
         final uniqueId = Uuid().v4();
 
         String photoUrl = await _uploadFile(
@@ -59,16 +58,16 @@ class UploadDocumentsController extends GetxController {
           'photoUrl': photoUrl,
           'idCardUrl': idCardUrl,
           'category': category,
-          'status': 'pending', // Initial status is 'pending'
+          'description': description.value, // Storing the description
+          'status': 'pending',
         });
 
-        Get.offAll(
-            () => VerificationScreen()); // Navigate to Verification Screen
+        Get.offAll(() => VerificationScreen());
       } catch (e) {
         showSnackBar(Get.context!, 'Failed to upload documents: $e');
       }
     } else {
-      showSnackBar(Get.context!, 'Please upload both photo and ID card.');
+      showSnackBar(Get.context!, 'Please complete all fields.');
     }
   }
 

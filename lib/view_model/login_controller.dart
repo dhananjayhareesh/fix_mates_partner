@@ -1,3 +1,4 @@
+import 'package:fix_mates_servicer/view/opening_screens/rejected_screen.dart';
 import 'package:fix_mates_servicer/view/opening_screens/verification_screen.dart';
 import 'package:fix_mates_servicer/view_model/signUp_controller.dart';
 import 'package:flutter/material.dart';
@@ -55,6 +56,9 @@ class LoginController extends GetxController {
         if (userStatus == 'pending') {
           // If the user is not verified, navigate to the VerificationScreen
           Get.off(() => VerificationScreen());
+        } else if (userStatus == 'rejected') {
+          // If the user is rejected, navigate to the rejection screen
+          Get.off(() => RejectionScreen());
         } else {
           // If the user is verified, navigate to the HomeScreen
           Get.off(() => HomeScreen());
