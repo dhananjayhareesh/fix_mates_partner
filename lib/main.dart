@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:fix_mates_servicer/firebase_options.dart';
 import 'package:fix_mates_servicer/view/home_screen.dart';
+import 'package:fix_mates_servicer/view/main_screen.dart';
 import 'package:fix_mates_servicer/view/opening_screens/login_screen.dart';
 import 'package:fix_mates_servicer/view/opening_screens/work_detail_screen.dart';
 import 'package:flutter/material.dart';
@@ -19,12 +20,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      title: 'Fix Mates App Servicer',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: LoginScreen(),
-    );
+        title: 'Fix Mates App Servicer',
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+        ),
+        home: //MainScreen(),
+            LoginScreen());
   }
 }

@@ -1,3 +1,4 @@
+import 'package:fix_mates_servicer/view/main_screen.dart';
 import 'package:fix_mates_servicer/view/opening_screens/rejected_screen.dart';
 import 'package:fix_mates_servicer/view/opening_screens/verification_screen.dart';
 import 'package:fix_mates_servicer/view_model/signUp_controller.dart';
@@ -61,7 +62,7 @@ class LoginController extends GetxController {
           Get.off(() => RejectionScreen());
         } else {
           // If the user is verified, navigate to the HomeScreen
-          Get.off(() => HomeScreen());
+          Get.off(() => MainScreen());
         }
       } else {
         // Handle the case where the user document is not found
