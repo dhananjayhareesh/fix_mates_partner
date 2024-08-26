@@ -1,3 +1,4 @@
+import 'package:fix_mates_servicer/utils/current_worker_helper.dart';
 import 'package:fix_mates_servicer/view/main_screen.dart';
 import 'package:fix_mates_servicer/view/opening_screens/rejected_screen.dart';
 import 'package:fix_mates_servicer/view/opening_screens/verification_screen.dart';
@@ -6,9 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:fix_mates_servicer/repositories/authentication.dart';
 import 'package:fix_mates_servicer/resources/widgets/snackBar.dart';
-import 'package:fix_mates_servicer/view/home_screen.dart';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart'; // Import FirebaseAuth
 
 class LoginController extends GetxController {
   var emailController = TextEditingController();
@@ -39,34 +39,52 @@ class LoginController extends GetxController {
     );
 
     if (res == "success") {
-      // Fetch the user document from Firestore
-      var userDoc = await FirebaseFirestore.instance
-          .collection('workers')
-          .where('userEmail', isEqualTo: emailController.text)
-          .get();
+      // Get the current user from FirebaseAuth
+      User? currentUser = FirebaseAuth.instance.currentUser;
 
-      if (userDoc.docs.isNotEmpty) {
-        // Check the verification status
-        var userStatus = userDoc.docs.first['status'];
+      if (currentUser != null) {
+        // Use the user's email to fetch the worker document from Firestore
+        var userDoc = await FirebaseFirestore.instance
+            .collection('workers')
+            .where('userEmail', isEqualTo: currentUser.email)
+            .get();
 
-        // Register the SignUpController if needed
-        if (!Get.isRegistered<SignUpController>()) {
-          Get.put(SignUpController());
-        }
+        if (userDoc.docs.isNotEmpty) {
+          // Get the worker document ID
+          var workerDocId = userDoc.docs.first.id;
 
-        if (userStatus == 'pending') {
-          // If the user is not verified, navigate to the VerificationScreen
-          Get.off(() => VerificationScreen());
-        } else if (userStatus == 'rejected') {
-          // If the user is rejected, navigate to the rejection screen
-          Get.off(() => RejectionScreen());
+          // Debug print the workerDocId
+          print('Worker Document ID: $workerDocId');
+
+          // Store the workerDocId using SharedPrefsHelper
+          await SharedPrefsHelper.storeUserDocumentId(workerDocId);
+
+          // Check the verification status
+          var userStatus = userDoc.docs.first['status'];
+
+          // Register the SignUpController if needed
+          if (!Get.isRegistered<SignUpController>()) {
+            Get.put(SignUpController());
+          }
+
+          if (userStatus == 'pending') {
+            // If the user is not verified, navigate to the VerificationScreen
+            Get.off(() => VerificationScreen());
+          } else if (userStatus == 'rejected') {
+            // If the user is rejected, navigate to the RejectionScreen
+            Get.off(() => RejectionScreen());
+          } else {
+            // If the user is verified, navigate to the HomeScreen
+            Get.off(() => MainScreen());
+          }
         } else {
-          // If the user is verified, navigate to the HomeScreen
-          Get.off(() => MainScreen());
+          // Handle the case where the user document is not found
+          showSnackBar(Get.context!, 'Worker not found');
+          isLoading.value = false;
         }
       } else {
-        // Handle the case where the user document is not found
-        showSnackBar(Get.context!, 'User not found');
+        // Handle the case where the current user is null
+        showSnackBar(Get.context!, 'User authentication failed');
         isLoading.value = false;
       }
     } else {

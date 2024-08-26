@@ -20,7 +20,7 @@ class MainScreen extends StatelessWidget {
           case 1:
             return const ReviewScreen();
           case 2:
-            return const BookingScreen();
+            return BookingScreen();
           case 3:
             return const ProfileScreen();
           default:
