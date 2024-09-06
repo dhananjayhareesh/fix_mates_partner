@@ -6,6 +6,21 @@ class BookingDetailController extends GetxController {
   Rx<String?> userName = Rx<String?>(null);
   Rx<Map<String, dynamic>?> location = Rx<Map<String, dynamic>?>(null);
   Rx<String?> locationName = Rx<String?>(null);
+  RxList<Map<String, dynamic>> bookings = RxList([]);
+  RxBool isLoading = false.obs;
+
+  RxInt pendingCount = 0.obs;
+  RxInt acceptedCount = 0.obs;
+  RxInt completedCount = 0.obs;
+
+  RxInt totalEarnings = 0.obs;
+  RxInt pendingPayments = 0.obs;
+
+  @override
+  void onInit() {
+    fetchBookings(); // Fetch bookings when the controller is initialized
+    super.onInit();
+  }
 
   void fetchBooking(String bookingId) async {
     booking.value = await FirebaseFirestore.instance
@@ -80,5 +95,36 @@ class BookingDetailController extends GetxController {
     } else {
       return 390 + (duration - 1) * 100;
     }
+  }
+
+  void fetchBookings() async {
+    isLoading.value = true;
+    final bookingQuery =
+        await FirebaseFirestore.instance.collection('Bookings').get();
+
+    bookings.value = bookingQuery.docs
+        .map((doc) => doc.data() as Map<String, dynamic>)
+        .toList();
+
+    pendingCount.value =
+        bookings.where((booking) => booking['status'] == 'pending').length;
+    acceptedCount.value =
+        bookings.where((booking) => booking['status'] == 'accepted').length;
+    completedCount.value =
+        bookings.where((booking) => booking['status'] == 'completed').length;
+
+    totalEarnings.value = bookings
+        .where((booking) =>
+            booking['status'] == 'completed' &&
+            booking['payment_status'] == 'paid')
+        .fold(0, (sum, booking) => sum + (booking['price'] as num).toInt());
+
+    pendingPayments.value = bookings
+        .where((booking) =>
+            booking['status'] == 'completed' &&
+            booking['payment_status'] == 'not_paid')
+        .fold(0, (sum, booking) => sum + (booking['price'] as num).toInt());
+
+    isLoading.value = false;
   }
 }

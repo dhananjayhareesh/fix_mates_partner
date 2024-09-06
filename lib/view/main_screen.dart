@@ -16,7 +16,7 @@ class MainScreen extends StatelessWidget {
       body: Obx(() {
         switch (_controller.currentIndex.value) {
           case 0:
-            return const HomeScreen();
+            return HomeScreen();
           case 1:
             return const ReviewScreen();
           case 2:
@@ -24,50 +24,107 @@ class MainScreen extends StatelessWidget {
           case 3:
             return const ProfileScreen();
           default:
-            return const HomeScreen();
+            return HomeScreen();
         }
       }),
       bottomNavigationBar: Obx(
-        () => BottomNavigationBar(
-          currentIndex: _controller.currentIndex.value,
-          onTap: _controller.changeIndex,
-          items: const [
-            BottomNavigationBarItem(
-              icon: Icon(
-                Icons.home,
-                color: Colors.black45,
+        () => Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                spreadRadius: 2,
+                blurRadius: 5,
               ),
-              label: 'Home',
+            ],
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(20),
+              topRight: Radius.circular(20),
             ),
-            BottomNavigationBarItem(
-              icon: Icon(
-                Icons.star,
-                color: Colors.black45,
+          ),
+          child: ClipRRect(
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(20),
+              topRight: Radius.circular(20),
+            ),
+            child: BottomNavigationBar(
+              currentIndex: _controller.currentIndex.value,
+              onTap: _controller.changeIndex,
+              type: BottomNavigationBarType.fixed,
+              backgroundColor: Colors.white,
+              elevation: 0, // No elevation as we added custom shadows.
+              items: [
+                BottomNavigationBarItem(
+                  icon: _buildNavItemIcon(
+                    icon: Icons.home,
+                    index: 0,
+                  ),
+                  label: 'Home',
+                ),
+                BottomNavigationBarItem(
+                  icon: _buildNavItemIcon(
+                    icon: Icons.star,
+                    index: 1,
+                  ),
+                  label: 'Reviews',
+                ),
+                BottomNavigationBarItem(
+                  icon: _buildNavItemIcon(
+                    icon: Icons.calendar_month,
+                    index: 2,
+                  ),
+                  label: 'Bookings',
+                ),
+                BottomNavigationBarItem(
+                  icon: _buildNavItemIcon(
+                    icon: Icons.person,
+                    index: 3,
+                  ),
+                  label: 'Profile',
+                ),
+              ],
+              selectedItemColor: Colors.blueAccent,
+              unselectedItemColor: Colors.grey,
+              selectedLabelStyle: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 12,
               ),
-              label: 'Reviews',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(
-                Icons.calendar_month,
-                color: Colors.black45,
+              unselectedLabelStyle: const TextStyle(
+                fontWeight: FontWeight.normal,
+                fontSize: 12,
               ),
-              label: 'Bookings',
+              showUnselectedLabels: true,
+              selectedIconTheme: const IconThemeData(size: 28),
+              unselectedIconTheme: const IconThemeData(size: 24),
             ),
-            BottomNavigationBarItem(
-              icon: Icon(
-                Icons.person,
-                color: Colors.black45,
-              ),
-              label: 'Profile',
-            ),
-          ],
-          selectedItemColor: Colors.black,
-          unselectedItemColor: Colors.grey,
-          selectedLabelStyle: TextStyle(fontWeight: FontWeight.bold),
-          unselectedLabelStyle: TextStyle(fontWeight: FontWeight.normal),
-          backgroundColor: Colors.white,
+          ),
         ),
       ),
+    );
+  }
+
+  // Custom method for building enhanced icons with animation
+  Widget _buildNavItemIcon({required IconData icon, required int index}) {
+    return Obx(
+      () {
+        bool isSelected = _controller.currentIndex.value == index;
+        return AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          width: isSelected ? 48 : 40,
+          height: isSelected ? 48 : 40,
+          decoration: BoxDecoration(
+            color: isSelected
+                ? Colors.blueAccent.withOpacity(0.1)
+                : Colors.transparent,
+            shape: BoxShape.circle,
+          ),
+          child: Icon(
+            icon,
+            color: isSelected ? Colors.blueAccent : Colors.grey,
+          ),
+        );
+      },
     );
   }
 }
